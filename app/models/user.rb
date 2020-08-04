@@ -5,21 +5,19 @@ class User < ApplicationRecord
   validates :first_name, presence: true
   validates :first_name, format: { with: /[a-zA-Z]+/, message: "半角英字のみ使えます" }
 
+  after_initialize do |user|
+    user.uuid = User.new_uuid
+    user.first_name = Gimei.first.romaji
+    user.last_name = User.new_last_name
+    user.user_digest =  User.digest(uuid)
+  end
+
   def authenticated?(uuid)
     BCrypt::Password.new(user_digest) == uuid
   end
 
   def full_name
     "#{first_name}#{last_name}-#{clone_number}"
-  end
-
-  private
-
-  after_initialize do |user|
-    user.uuid = User.new_uuid
-    user.first_name = Faker::Name.first_name
-    user.last_name = User.new_last_name
-    user.user_digest =  User.digest(uuid)
   end
 
   class << self
