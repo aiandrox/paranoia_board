@@ -3,10 +3,11 @@ class StaticPagesController < ApplicationController
 
   def top
     @comment = current_user.comments.build
+    @comments = Comment.all
   end
 
   private
-  
+
   def set_user
     unless current_user
       user = User.create!
