@@ -1,0 +1,6 @@
+h1 StaticPages#top
+p Find me in app/views/static_pages/top.html.erb
+= current_user.full_name
+
+= form_with model: @comment, local: true do |f|
+  = f.text_area :body

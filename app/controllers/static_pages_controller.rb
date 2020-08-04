@@ -2,7 +2,7 @@ class StaticPagesController < ApplicationController
   before_action :set_user
 
   def top
-    
+    @comment = current_user.comments.build
   end
 
   private
