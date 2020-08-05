@@ -4,3 +4,7 @@ p Find me in app/views/static_pages/top.html.erb
 
 = form_with model: @comment, local: true do |f|
   = f.text_area :body
+  = f.submit
+
+
+= render @comments
