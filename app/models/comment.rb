@@ -1,5 +1,5 @@
 class Comment < ApplicationRecord
-  before_save :filter_body
+  before_save :add_data
   belongs_to :user
   validates :body, presence: true
   validate :check_body
@@ -7,21 +7,22 @@ class Comment < ApplicationRecord
   private
 
   def check_body
-    case cotoha_rerult['sentiment']
+    return if body.empty?
+
+    case cotoha_result['sentiment']
     when 'Neutral'
       errors.add(:body, '幸福な内容を投稿してください。')
     when 'Negative'
       errors.add(:body, '幸福な内容を投稿してください。ZapZapZap')
-      self.user.clone_number += 1
-      self.save!
+      self.user.zap
     end
   end
 
-  def filter_body
+  def add_data
     self.sentiment_score = cotoha_result['score']
   end
 
-  def cotoha_rerult
+  def cotoha_result
     @cotoha_result ||= begin
       response = cotoha_client.sentiment(sentence: body)
       response['result']

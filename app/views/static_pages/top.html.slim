@@ -3,8 +3,8 @@ p Find me in app/views/static_pages/top.html.erb
 = current_user.full_name
 
 = form_with model: @comment, local: true do |f|
+  = render 'shared/error_messages', object: f.object
   = f.text_area :body
   = f.submit
-
 
 = render @comments

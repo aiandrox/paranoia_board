@@ -1,8 +1,11 @@
 class CommentsController < ApplicationController
   def create
-    if current_user.comments.create(comment_params)
-      redirect_to 'static_pages#top'
+    @comments = Comment.all
+    @comment = current_user.comments.build(comment_params)
+    if @comment.save
+      redirect_to root_path, success: '成功'
     else
+      flash.now[:error] = '失敗'
       render 'static_pages/top'
     end
   end
@@ -10,7 +13,7 @@ class CommentsController < ApplicationController
   def destroy
     comment = current_user.comments.find(params[:id])
     comment.destroy!
-    redirect_to 'static_pages#top'
+    redirect_to root_path
   end
 
   private

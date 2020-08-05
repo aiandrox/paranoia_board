@@ -20,6 +20,7 @@ class User < ApplicationRecord
     else
       self.clone_number = 7
     end
+    self.save! # TODO: エラー
   end
 
   private
