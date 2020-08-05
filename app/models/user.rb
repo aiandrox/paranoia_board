@@ -3,8 +3,8 @@ class User < ApplicationRecord
   before_create :set_data
   has_many :comments, dependent: :destroy
 
-  validates :first_name, presence: true
-  validates :first_name, format: { with: /[a-zA-Z]+/, message: "半角英字のみ使えます" }
+  validates :first_name, presence: true, on: :update
+  validates :first_name, format: { with: /[a-zA-Z]+/, message: "半角英字のみ使えます" }, on: :update
 
   def authenticated?(uuid)
     BCrypt::Password.new(user_digest) == uuid
@@ -14,13 +14,21 @@ class User < ApplicationRecord
     "#{first_name}#{last_name}-#{clone_number}"
   end
 
+  def zap
+    if self.clone_number < 6
+      self.clone_number += 1
+    else
+      self.clone_number = 7
+    end
+  end
+
   private
 
   def set_data
-    uuid = User.new_uuid
-    first_name = Gimei.first.romaji
-    last_name = User.new_last_name
-    user_digest =  User.digest(uuid)
+    self.uuid = User.new_uuid
+    self.first_name = Gimei.first.romaji
+    self.last_name = User.new_last_name
+    self.user_digest =  User.digest(uuid)
   end
 
   class << self
@@ -29,11 +37,11 @@ class User < ApplicationRecord
     end
 
     def new_last_name
-      residence = (0..2).map{ ('A'..'Z').to_a[rand(26)] }.join
-      "-#{class_color}-#{residence}"
+      sector = (0..2).map{ ('A'..'Z').to_a[rand(26)] }.join
+      "-#{clearance}-#{sector}"
     end
 
-    def class_color
+    def clearance
       colors = [['R', 2500], ['O', 500], ['Y', 100], ['G', 50], ['B', 30], ['I', 10], ['V', 1 ]] # [文字列, 重み]
       array = []
       colors.each do |item|
