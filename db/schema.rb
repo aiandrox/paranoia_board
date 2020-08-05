@@ -14,6 +14,7 @@ ActiveRecord::Schema.define(version: 2020_08_04_055530) do
 
   create_table "comments", force: :cascade do |t|
     t.string "body", null: false
+    t.float "sentiment_score", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
