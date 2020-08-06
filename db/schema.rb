@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_05_231549) do
+ActiveRecord::Schema.define(version: 2020_08_06_105128) do
 
   create_table "comments", force: :cascade do |t|
     t.string "body", null: false
@@ -29,6 +29,8 @@ ActiveRecord::Schema.define(version: 2020_08_05_231549) do
     t.string "user_digest", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "death_flag", default: false, null: false
+    t.boolean "dead", default: false, null: false
   end
 
   add_foreign_key "comments", "users"
