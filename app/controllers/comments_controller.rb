@@ -5,6 +5,7 @@ class CommentsController < ApplicationController
     if @comment.save
       redirect_to root_path, success: '成功'
     else
+      @comment.user.zap if @comment.sentiment == 'Negative'
       flash.now[:error] = '失敗'
       render 'static_pages/top'
     end

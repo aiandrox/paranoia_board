@@ -4,26 +4,32 @@ class Comment < ApplicationRecord
   validates :body, presence: true
   validate :check_body
 
+  def sentiment
+    cotoha_result['sentiment']
+  end
+
   private
 
   def check_body
     return if body.empty?
 
-    case cotoha_result['sentiment']
+    case sentiment
     when 'Neutral'
       errors.add(:body, '幸福な内容を投稿してください。')
     when 'Negative'
       errors.add(:body, '幸福な内容を投稿してください。ZapZapZap')
-      self.user.zap
     end
   end
 
   def add_data
     self.sentiment_score = cotoha_result['score']
+    self.sender_name = user.full_name
   end
 
   def cotoha_result
     @cotoha_result ||= begin
+      { 'sentiment': 'Neutral' } if body.empty?
+
       response = cotoha_client.sentiment(sentence: body)
       response['result']
     end

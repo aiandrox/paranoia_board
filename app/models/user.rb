@@ -5,6 +5,7 @@ class User < ApplicationRecord
 
   validates :first_name, presence: true, on: :update
   validates :first_name, format: { with: /[a-zA-Z]+/, message: "半角英字のみ使えます" }, on: :update
+  validates :first_name, length: { maximum: 10 }
 
   def authenticated?(uuid)
     BCrypt::Password.new(user_digest) == uuid
@@ -15,12 +16,7 @@ class User < ApplicationRecord
   end
 
   def zap
-    if self.clone_number < 6
-      self.clone_number += 1
-    else
-      self.clone_number = 7
-    end
-    self.save! # TODO: エラー
+    update(clone_number: clone_number + 1)
   end
 
   private
