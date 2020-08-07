@@ -1,10 +1,10 @@
 class User < ApplicationRecord
-  attr_accessor :uuid
+  attr_accessor :uuid, :clearance
   before_create :set_data
   has_many :comments, dependent: :destroy
 
   validates :first_name, presence: true, on: :update
-  validates :first_name, format: { with: /[a-zA-Z]+/, message: "半角英字のみ使えます" }, on: :update
+  validates :first_name, format: { with: /\A[a-zA-Z]+\z/, message: "は半角英字にしてください" }, on: :update
   validates :first_name, length: { maximum: 10 }
 
   scope :alive, -> { where(&:alive?) }
@@ -25,7 +25,7 @@ class User < ApplicationRecord
   end
 
   def full_name
-    alive? ? "#{first_name}#{last_name}-#{clone_number}" : '[規制されました]'
+    alive? ? "#{first_name}-#{clearance}-#{sector}-#{clone_number}" : '[規制されました]'
   end
 
   private
@@ -33,7 +33,8 @@ class User < ApplicationRecord
   def set_data
     self.uuid = User.new_uuid
     self.first_name = Gimei.first.romaji
-    self.last_name = User.new_last_name
+    self.sector = (0..2).map{ ('A'..'Z').to_a[rand(26)] }.join
+    self.clearance = User.new_clearance
     self.user_digest =  User.digest(uuid)
   end
 
@@ -42,12 +43,7 @@ class User < ApplicationRecord
       SecureRandom.urlsafe_base64
     end
 
-    def new_last_name
-      sector = (0..2).map{ ('A'..'Z').to_a[rand(26)] }.join
-      "-#{clearance}-#{sector}"
-    end
-
-    def clearance
+    def new_clearance
       colors = [['R', 2500], ['O', 500], ['Y', 100], ['G', 50], ['B', 30], ['I', 10], ['V', 1 ]] # [文字列, 重み]
       array = []
       colors.each do |item|
