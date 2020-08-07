@@ -7,16 +7,25 @@ class User < ApplicationRecord
   validates :first_name, format: { with: /[a-zA-Z]+/, message: "半角英字のみ使えます" }, on: :update
   validates :first_name, length: { maximum: 10 }
 
+  scope :alive, -> { where(&:alive?) }
+
+  def zap!
+    # selfはcommentオブジェクト（invalid）を持っているので、userという別オブジェクトとして更新する
+    user = User.find(id)
+    user.update!(clone_number: clone_number + 1)
+    reload
+  end
+
   def authenticated?(uuid)
     BCrypt::Password.new(user_digest) == uuid
   end
 
-  def full_name
-    "#{first_name}#{last_name}-#{clone_number}"
+  def alive?
+    clone_number <= 6
   end
 
-  def zap
-    update(clone_number: clone_number + 1)
+  def full_name
+    alive? ? "#{first_name}#{last_name}-#{clone_number}" : '[規制されました]'
   end
 
   private
