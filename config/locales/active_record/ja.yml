@@ -1,0 +1,9 @@
+ja:
+  activerecord:
+    models:
+      user: 市民
+    attributes:
+      user:
+        first_name: 名前
+      comment:
+        body: 

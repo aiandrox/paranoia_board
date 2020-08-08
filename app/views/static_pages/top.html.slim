@@ -1,6 +1,14 @@
-h1 StaticPages#top
-p Find me in app/views/static_pages/top.html.erb
-= current_user.full_name
+h1 アルファ・コンプレックスへようこそ
+p
+  | あなたに与えられた名前は
+  = current_user.full_name
+  | です。
+p
+  | ファーストネームに限り、
+  = link_to 'こちら', mypage_path
+  | から変更することができます。
+
+p 市民の声が掲載されています。
 
 = form_with model: @comment, local: true do |f|
   = render 'shared/error_messages', object: f.object
