@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  attr_accessor :uuid, :clearance
+  attr_accessor :uuid
   before_create :set_data
   has_many :comments, dependent: :destroy
 
@@ -25,7 +25,26 @@ class User < ApplicationRecord
   end
 
   def full_name
-    alive? ? "#{first_name}-#{clearance}-#{sector}-#{clone_number}" : '[規制されました]'
+    alive? ? "#{first_name}-#{clearance}-#{sector}-#{clone_number}" : '<規制されました>'
+  end
+
+  def clearance
+    @clearance ||= begin
+      count = comments.count
+      if count > 150
+        'I'
+      elsif count > 100
+        'B'
+      elsif count > 50
+        'G'
+      elsif count > 30
+        'Y'
+      elsif count > 10
+        'O'
+      else
+        'R'
+      end
+    end
   end
 
   private
@@ -34,22 +53,12 @@ class User < ApplicationRecord
     self.uuid = User.new_uuid
     self.first_name = Gimei.first.romaji
     self.sector = (0..2).map{ ('A'..'Z').to_a[rand(26)] }.join
-    self.clearance = User.new_clearance
     self.user_digest =  User.digest(uuid)
   end
 
   class << self
     def new_uuid
       SecureRandom.urlsafe_base64
-    end
-
-    def new_clearance
-      colors = [['R', 2500], ['O', 500], ['Y', 100], ['G', 50], ['B', 30], ['I', 10], ['V', 1 ]] # [文字列, 重み]
-      array = []
-      colors.each do |item|
-        array.push(Array.new(item[1], item[0]))
-      end
-      array.flatten.sample
     end
 
     def digest(string)
