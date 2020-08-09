@@ -4,7 +4,7 @@ class User < ApplicationRecord
   has_many :comments, dependent: :destroy
 
   validates :first_name, presence: true, on: :update
-  validates :first_name, format: { with: /\A[a-zA-Z]+\z/, message: "は半角英字にしてください" }, on: :update
+  validates :first_name, format: { with: /\A[a-zA-Z]+\z/, message: "は半角英字で入力してください" }, on: :update
   validates :first_name, length: { maximum: 10 }
 
   scope :alive, -> { where(&:alive?) }
@@ -14,6 +14,14 @@ class User < ApplicationRecord
     user = User.find(id)
     user.update!(clone_number: clone_number + 1)
     reload
+  end
+
+  def create_citizen
+    # binding.pry
+    check_clone_number_valid
+    self.sector = User.new_sector
+    self.clone_number = 1
+    errors.any? ? false : save
   end
 
   def authenticated?(uuid)
@@ -49,16 +57,24 @@ class User < ApplicationRecord
 
   private
 
+  def check_clone_number_valid
+    errors.add(:clone_number, 'が残っています') if clone_number <= 6
+  end
+
   def set_data
     self.uuid = User.new_uuid
     self.first_name = Gimei.first.romaji
-    self.sector = (0..2).map{ ('A'..'Z').to_a[rand(26)] }.join
+    self.sector = User.new_sector
     self.user_digest =  User.digest(uuid)
   end
 
   class << self
     def new_uuid
       SecureRandom.urlsafe_base64
+    end
+
+    def new_sector
+      (0..2).map{ ('A'..'Z').to_a[rand(26)] }.join
     end
 
     def digest(string)

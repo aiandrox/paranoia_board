@@ -5,6 +5,7 @@ ja:
     attributes:
       user:
         first_name: 名前
+        clone_number: クローン
       comment:
         user_id: この市民
         body: 投稿

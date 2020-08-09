@@ -1,7 +1,8 @@
-あああ
 = current_user.full_name
+- unless current_user.alive?
+  = link_to '新たな市民として生まれ変わる', mypage_path, method: :patch
 
-= form_with model: current_user, url: mypage_first_name_path, local: true do |f|
+= form_with model: current_user, url: first_name_mypage_path, local: true do |f|
   = render 'shared/error_messages', object: f.object
   = f.text_field :first_name
   = f.submit
