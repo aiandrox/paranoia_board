@@ -2,10 +2,19 @@ class Comment < ApplicationRecord
   before_save :add_data
   belongs_to :user
   validates :body, presence: true
+  validates :body, length: { maximum: 200 }
   validate :check_body
 
+  scope :desc, -> { order(created_at: :desc) }
+
   def sentiment
-    cotoha_result['sentiment']
+    if score < -0.4
+      :negative
+    elsif score < 0.1
+      :neutral
+    else
+      :positive
+    end
   end
 
   private
@@ -14,32 +23,19 @@ class Comment < ApplicationRecord
     return if body.empty?
 
     case sentiment
-    when 'Neutral'
+    when :neutral
       errors.add(:body, '幸福な内容を投稿してください。')
-    when 'Negative'
+    when :negative
       errors.add(:body, '幸福な内容を投稿してください。ZapZapZap')
     end
   end
 
   def add_data
-    self.sentiment_score = cotoha_result['score']
+    self.sentiment_score = score
     self.sender_name = user.full_name
   end
 
-  def cotoha_result
-    @cotoha_result ||= begin
-      { 'sentiment': 'Neutral' } if body.empty?
-
-      response = cotoha_client.sentiment(sentence: body)
-      response['result']
-    end
-  end
-
-  def cotoha_client
-    client_id = Rails.application.credentials.cotoha[:client_id]
-    client_secret = Rails.application.credentials.cotoha[:client_secret]
-    client = Cotoha::Client.new(client_id: client_id, client_secret: client_secret)
-    client.create_access_token
-    client
+  def score
+    GoogleSentimentAnalysisServise.new(body).sentiment_score
   end
 end
