@@ -6,4 +6,5 @@ ja:
       user:
         first_name: 名前
       comment:
-        body: 
+        user_id: この市民
+        body: 投稿

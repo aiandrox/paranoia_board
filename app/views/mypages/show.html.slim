@@ -1,7 +1,7 @@
 あああ
 = current_user.full_name
 
-= form_with model: current_user, url: mypage_path, local: true do |f|
+= form_with model: current_user, url: mypage_first_name_path, local: true do |f|
   = render 'shared/error_messages', object: f.object
   = f.text_field :first_name
   = f.submit
