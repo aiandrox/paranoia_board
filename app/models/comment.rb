@@ -1,9 +1,10 @@
 class Comment < ApplicationRecord
   before_save :add_data
   belongs_to :user
+  validate :user_valid
   validates :body, presence: true
   validates :body, length: { maximum: 200 }
-  validate :check_body
+  validate :body_sentiment
 
   scope :desc, -> { order(created_at: :desc) }
 
@@ -19,14 +20,20 @@ class Comment < ApplicationRecord
 
   private
 
-  def check_body
-    return if body.empty?
+  def user_valid
+    if user.clone_number > 6
+      errors.add(:user_id, 'は規制されています')
+    end
+  end
+
+  def body_sentiment
+    return if errors.any?
 
     case sentiment
     when :neutral
-      errors.add(:body, '幸福な内容を投稿してください。')
+      errors.add(:body, 'には幸福な内容を入力してください')
     when :negative
-      errors.add(:body, '幸福な内容を投稿してください。ZapZapZap')
+      errors.add(:body, 'が反逆的です。ZapZapZap')
     end
   end
 

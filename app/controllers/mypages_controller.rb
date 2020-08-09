@@ -1,6 +1,6 @@
 class MypagesController < ApplicationController
   def show
-    @comments = current_user.comments
+    @comments = current_user.comments.desc
   end
 
   def update
