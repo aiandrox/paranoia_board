@@ -8,7 +8,10 @@ p
   = link_to 'こちら', mypage_path
   | から変更することができます。
 
-p 市民の声が掲載されています。
+p
+  | 市民は本日の報告をこちらに投稿しなければなりません。
+  br
+  | 幸福は義務です。
 
 = form_with model: @comment, local: true do |f|
   = render 'shared/error_messages', object: f.object

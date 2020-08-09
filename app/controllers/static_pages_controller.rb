@@ -3,7 +3,7 @@ class StaticPagesController < ApplicationController
 
   def top
     @comment = current_user.comments.build
-    @comments = Comment.all
+    @comments = Comment.desc
   end
 
   private
