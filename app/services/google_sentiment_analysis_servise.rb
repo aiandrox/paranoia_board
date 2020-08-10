@@ -22,7 +22,7 @@ class GoogleSentimentAnalysisServise
   private
 
   def language
-    @language ||= Google::Cloud::Language.language_service
+    @language ||= Google::Cloud::Language.language_service(credentials: JSON.parse(ENV.fetch('GOOGLE_API_CREDS')))
   end
 
   def response
