@@ -1,21 +1,28 @@
-h1 アルファ・コンプレックスへようこそ
-p
-  | あなたに与えられた名前は
-  = current_user.full_name
-  | です。
-p
-  | ファーストネームに限り、
-  = link_to 'こちら', mypage_path
-  | から変更することができます。
+.header
+  h1.h1 アルファ・コンプレックスへようこそ
+.main
+  .wrapper
+    - if current_user.alive?
+      p
+        | あなたに与えられた名前は
+        = current_user.full_name
+        | です。
+      p
+        | ファーストネームに限り、
+        = link_to 'こちら', mypage_path
+        | から変更することができます。
 
-p
-  | 市民は本日の報告をこちらに投稿しなければなりません。
-  br
-  | 幸福は義務です。
+      p
+        | 幸福な市民は定期的な報告をすることになっています。
+        br
+        | 幸福は義務です。また、反逆の意志が見られた場合は処刑されます。
 
-= form_with model: @comment, local: true do |f|
-  = render 'shared/error_messages', object: f.object
-  = f.text_area :body
-  = f.submit
+      = form_with model: @comment, local: true do |f|
+        = render 'shared/error_messages', object: f.object
+        = f.text_area :body
+        = f.submit
 
-= render @comments
+      = render @comments
+
+    - else
+      =render 'dead_message'
